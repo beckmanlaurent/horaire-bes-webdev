@@ -55,30 +55,28 @@ button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
-/* Bandeau */
-.band { background: var(--navy); color: var(--navy-ink); }
-.band .wrap { padding-block: 22px 20px; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; justify-content: space-between; }
-.brand h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.6rem, 3.4vw, 2.3rem); letter-spacing: -.02em; line-height: 1.05; text-wrap: balance; }
-.brand p { margin: 6px 0 0; color: var(--navy-soft); font-size: .9rem; }
-.years { display: inline-flex; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 3px; }
-.years button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; cursor: pointer; color: var(--navy-soft); font-weight: 600; white-space: nowrap; }
-.years button[aria-pressed="true"] { background: var(--navy-ink); color: var(--navy); }
+/* Barre du haut : titre | prochain cours | année */
+.top { padding-block: 16px 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand next years"; gap: 12px 20px; align-items: center; }
+.brand { grid-area: brand; min-width: 0; }
+.brand h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; letter-spacing: -.02em; line-height: 1.1; }
+.brand p { margin: 3px 0 0; color: var(--muted); font-size: .8rem; }
+.top .years { grid-area: years; }
 
 /* Prochain cours */
-.next { margin-top: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 6px 18px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; }
-.next .eyebrow { grid-column: 1 / -1; font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
-.next .sw { width: 12px; align-self: stretch; border-radius: 4px; background: hsl(var(--h) 65% var(--chip-edge-l)); }
-.next .what { min-width: 0; }
-.next .what strong { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; display: block; line-height: 1.2; }
-.next .what span { color: var(--muted); }
-.next .when { text-align: right; font-family: var(--font-mono); font-size: .9rem; }
-.next .when b { display: block; color: var(--red); font-size: 1rem; }
+.next { grid-area: next; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; min-width: 0; }
+.next .sw { width: 8px; align-self: stretch; border-radius: 3px; background: hsl(var(--h) 65% var(--chip-edge-l)); }
+.next .what { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.next .eyebrow { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.next .what strong { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1.25; }
+.next .what .who { color: var(--muted); font-size: .85rem; margin-left: 8px; }
+.next .when { text-align: right; font-family: var(--font-mono); font-size: .78rem; white-space: nowrap; }
+.next .when b { display: block; color: var(--red); font-size: .88rem; }
 
 /* Barre d'outils */
-.toolbar { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
-.seg { display: inline-flex; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 3px; }
-.seg button { border: 0; background: none; padding: 6px 14px; border-radius: 7px; cursor: pointer; font-weight: 600; color: var(--muted); }
-.seg button[aria-pressed="true"] { background: var(--navy); color: var(--navy-ink); }
+.toolbar { margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.seg, .years { display: inline-flex; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 3px; }
+.seg button, .years button { border: 0; background: none; padding: 6px 14px; border-radius: 7px; cursor: pointer; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"], .years button[aria-pressed="true"] { background: var(--navy); color: var(--navy-ink); }
 .nav { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
 .iconbtn { width: 36px; height: 36px; flex: none; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 1.1rem; display: grid; place-items: center; }
 .iconbtn:hover, .todaybtn:hover { border-color: var(--muted); }
@@ -149,6 +147,7 @@ button { font: inherit; color: inherit; }
 .course .st b { color: var(--ink); font-weight: 600; }
 
 @media (max-width: 1000px) {
+  .top { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "brand years" "next next"; }
   .main { grid-template-columns: minmax(0, 1fr); }
   .side { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
   .side h2, .side .hint { grid-column: 1 / -1; }
@@ -165,30 +164,28 @@ button { font: inherit; color: inherit; }
   .cell { min-height: 5.2rem; padding: 4px; }
   .chip { font-size: 0; padding: 0; height: 6px; border-left-width: 0; background: hsl(var(--h) 65% var(--chip-edge-l)); }
   .cell .offl { font-size: .62rem; }
-  .next { grid-template-columns: auto 1fr; }
+  .next { grid-template-columns: auto minmax(0, 1fr); }
   .next .when { grid-column: 2; text-align: left; }
   .next .when b { display: inline; margin-right: 8px; }
+  .next .what .who { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 
-<header class="band">
-  <div class="wrap">
+<div class="wrap">
+  <header class="top">
     <div class="brand">
       <h1>Horaire BES Webdeveloper</h1>
-      <p>Année scolaire 2026–2027 · grille du 25/09/2026</p>
+      <p>2026–2027 · grille du 25/09/2026</p>
     </div>
+    <section class="next" id="next" aria-live="polite"></section>
     <div class="years" role="group" aria-label="Année">
       <button id="y1" data-year="1" aria-pressed="true">1ère</button>
       <button id="y2" data-year="2" aria-pressed="false">2ème</button>
     </div>
-  </div>
-</header>
-
-<div class="wrap">
-  <section class="next" id="next" aria-live="polite"></section>
+  </header>
 
   <div class="toolbar">
     <div class="seg" role="group" aria-label="Vue">
@@ -374,7 +371,7 @@ function renderWeek() {
     return;
   }
   const slots = SLOT_ORDER.filter(sl => YEARS[state.year].rules.some(r => r[2] === sl));
-  const rows = slots.map(sl => sl === "ev" ? "7.6rem" : "9.6rem").join(" ");
+  const rows = slots.map(sl => sl === "ev" ? "7.2rem" : "9rem").join(" ");
   const t = now(), todayK = key(t);
   let html = `<div class="week${state.focus ? " dim" : ""}" style="--rows:${rows}">`;
   html += `<div class="tcol" aria-hidden="true"><div></div>${slots.map(sl => `<div class="t">${hm(SLOTS[sl].s)}<br>${hm(SLOTS[sl].e)}</div>`).join("")}</div>`;
@@ -454,13 +451,12 @@ function relTime(ms) {
 function renderNext() {
   const t = now(), D = DATA[state.year];
   const s = D.list.find(x => x.end > t);
-  if (!s) { $("next").innerHTML = `<span class="eyebrow">Prochain cours</span><span></span><div class="what"><strong>Plus de cours à l'horaire</strong><span>L'année est terminée sur cette grille.</span></div>`; $("next").style.removeProperty("--h"); return; }
+  if (!s) { $("next").innerHTML = `<span></span><div class="what"><span class="eyebrow">Prochain cours</span><strong>Plus de cours à l'horaire</strong></div>`; $("next").style.removeProperty("--h"); return; }
   const C = course(s.id), S = SLOTS[s.slot], live = s.start <= t;
   const dayLabel = key(s.date) === key(t) ? "Aujourd'hui" : key(s.date) === key(addDays(t, 1)) ? "Demain" : `${DAYS_LONG[wdOf(s.date)]} ${fmtDay(s.date)}`;
   $("next").style.setProperty("--h", C.h);
-  $("next").innerHTML = `<span class="eyebrow">${live ? "En cours" : "Prochain cours"}</span>
-    <span class="sw"></span>
-    <div class="what"><strong>${esc(C.name)}</strong><span>${esc(C.prof)} · séance ${s.n}/${s.total}</span></div>
+  $("next").innerHTML = `<span class="sw"></span>
+    <div class="what"><span class="eyebrow">${live ? "En cours" : "Prochain cours"}</span><strong>${esc(C.name)}</strong><span class="who">${esc(C.prof)} · séance ${s.n}/${s.total}</span></div>
     <div class="when"><b>${live ? `fin ${relTime(s.end - t)}` : relTime(s.start - t)}</b>${dayLabel} · ${hm(S.s)}–${hm(S.e)}</div>`;
 }
 
