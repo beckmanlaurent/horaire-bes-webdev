@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Horaire 2026-2027 du BES Webdeveloper (1ère et 2ème) en vue semaine ou mois.">
+<title>Horaire BES Webdev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+body { margin: 0; }
+[hidden] { display: none !important; }
+/* Layout: bandeau marine façon grille de l'école, barre d'outils, puis calendrier + colonne des cours (empilés sur mobile) */
+:root {
+  --bg: #F2F4F8;
+  --surface: #FFFFFF;
+  --ink: #141B2D;
+  --muted: #5C6479;
+  --line: #DDE2EB;
+  --navy: #1F2D55;
+  --navy-ink: #F4F6FB;
+  --navy-soft: #B9C3DD;
+  --red: #D8392F;
+  --hatch: rgba(31, 45, 85, .07);
+  --focus: #2F6FED;
+  --chip-s: 78%;
+  --chip-l: 94%;
+  --chip-edge-l: 47%;
+  --chip-ink-l: 24%;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1120; --surface: #151B2E; --ink: #E8EBF3; --muted: #99A2B8; --line: #262E45;
+    --navy: #18224A; --navy-ink: #F4F6FB; --navy-soft: #8F9BC2; --red: #FF6A5C;
+    --hatch: rgba(160, 175, 220, .07); --focus: #7AA5FF;
+    --chip-s: 38%; --chip-l: 21%; --chip-edge-l: 62%; --chip-ink-l: 88%;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1120; --surface: #151B2E; --ink: #E8EBF3; --muted: #99A2B8; --line: #262E45;
+  --navy: #18224A; --navy-ink: #F4F6FB; --navy-soft: #8F9BC2; --red: #FF6A5C;
+  --hatch: rgba(160, 175, 220, .07); --focus: #7AA5FF;
+  --chip-s: 38%; --chip-l: 21%; --chip-edge-l: 62%; --chip-ink-l: 88%;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Bandeau */
+.band { background: var(--navy); color: var(--navy-ink); }
+.band .wrap { padding-block: 22px 20px; display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; justify-content: space-between; }
+.brand h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.6rem, 3.4vw, 2.3rem); letter-spacing: -.02em; line-height: 1.05; text-wrap: balance; }
+.brand p { margin: 6px 0 0; color: var(--navy-soft); font-size: .9rem; }
+.years { display: inline-flex; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 3px; }
+.years button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; cursor: pointer; color: var(--navy-soft); font-weight: 600; white-space: nowrap; }
+.years button[aria-pressed="true"] { background: var(--navy-ink); color: var(--navy); }
+
+/* Prochain cours */
+.next { margin-top: 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 6px 18px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; }
+.next .eyebrow { grid-column: 1 / -1; font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.next .sw { width: 12px; align-self: stretch; border-radius: 4px; background: hsl(var(--h) 65% var(--chip-edge-l)); }
+.next .what { min-width: 0; }
+.next .what strong { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; display: block; line-height: 1.2; }
+.next .what span { color: var(--muted); }
+.next .when { text-align: right; font-family: var(--font-mono); font-size: .9rem; }
+.next .when b { display: block; color: var(--red); font-size: 1rem; }
+
+/* Barre d'outils */
+.toolbar { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.seg { display: inline-flex; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 3px; }
+.seg button { border: 0; background: none; padding: 6px 14px; border-radius: 7px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--navy); color: var(--navy-ink); }
+.nav { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.iconbtn { width: 36px; height: 36px; flex: none; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 1.1rem; display: grid; place-items: center; }
+.iconbtn:hover, .todaybtn:hover { border-color: var(--muted); }
+.iconbtn:disabled { opacity: .35; cursor: default; }
+.label { min-width: 0; flex: 1; padding-inline: 6px; }
+.label .big { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; line-height: 1.15; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.label .wk { font-family: var(--font-mono); font-size: .8rem; color: var(--red); font-weight: 700; letter-spacing: .02em; }
+.label .sub { color: var(--muted); font-size: .88rem; }
+.todaybtn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 7px 14px; cursor: pointer; font-weight: 600; }
+
+/* Grille principale */
+.main { margin-top: 16px; padding-bottom: 40px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+
+/* Vue semaine */
+.week { display: grid; grid-template-columns: 4.2rem repeat(5, minmax(0, 1fr)); gap: 8px; }
+.tcol, .day { display: grid; grid-template-rows: 3.2rem var(--rows); gap: 8px; min-width: 0; }
+.tcol .t { font-family: var(--font-mono); font-size: .72rem; color: var(--muted); padding-top: 8px; line-height: 1.5; }
+.dhead { display: flex; flex-direction: column; justify-content: center; padding: 0 10px; border-radius: 10px; }
+.dhead .dn { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; }
+.dhead .dd { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.1; }
+.day.today .dhead { background: var(--red); color: #fff; }
+.day.today .dhead .dn { color: rgba(255,255,255,.85); }
+.slot { border-radius: 12px; min-width: 0; }
+.slot.empty { border: 1px dashed var(--line); }
+.blk { height: 100%; display: flex; flex-direction: column; gap: 4px; padding: 10px 11px; border-radius: 12px; background: hsl(var(--h) var(--chip-s) var(--chip-l)); color: hsl(var(--h) 45% var(--chip-ink-l)); border-left: 4px solid hsl(var(--h) 65% var(--chip-edge-l)); cursor: pointer; text-align: left; border-top: 0; border-right: 0; border-bottom: 0; width: 100%; transition: opacity .2s; }
+.blk .time { font-family: var(--font-mono); font-size: .72rem; font-weight: 700; opacity: .85; }
+.blk .nm { font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.blk .meta { margin-top: auto; font-size: .78rem; opacity: .85; display: flex; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
+.blk .meta code { font-family: var(--font-mono); font-size: .7rem; }
+.blk.past { opacity: .55; }
+.dim .blk:not(.hl), .dim .chip:not(.hl) { opacity: .18; }
+.dim .blk.hl, .dim .chip.hl { opacity: 1; }
+.offday { grid-row: 2 / -1; border-radius: 12px; background: repeating-linear-gradient(135deg, var(--hatch) 0 8px, transparent 8px 16px); border: 1px solid var(--line); display: grid; place-items: center; text-align: center; padding: 12px; color: var(--muted); font-weight: 600; }
+.vacation { border-radius: 16px; border: 1px solid var(--line); background: repeating-linear-gradient(135deg, var(--hatch) 0 10px, transparent 10px 20px), var(--surface); padding: 48px 24px; text-align: center; }
+.vacation h2 { margin: 0; font-family: var(--font-display); font-size: 1.8rem; text-wrap: balance; }
+.vacation p { margin: 8px 0 0; color: var(--muted); }
+.noday { display: none; }
+
+/* Vue mois */
+.month { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.mh { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; padding: 0 6px 2px; }
+.cell { min-height: 7.4rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; text-align: left; min-width: 0; }
+.cell:hover { border-color: var(--muted); }
+.cell.out { opacity: .38; }
+.cell.off { background: repeating-linear-gradient(135deg, var(--hatch) 0 7px, transparent 7px 14px), var(--surface); }
+.cell .n { font-family: var(--font-display); font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+.cell.today .n span:first-child { background: var(--red); color: #fff; border-radius: 6px; padding: 0 6px; }
+.cell .offl { font-size: .72rem; color: var(--muted); font-weight: 600; line-height: 1.2; }
+.cell .wkn { font-family: var(--font-mono); font-size: .62rem; color: var(--red); font-weight: 700; }
+.chip { display: block; font-size: .74rem; line-height: 1.25; padding: 3px 6px; border-radius: 6px; background: hsl(var(--h) var(--chip-s) var(--chip-l)); color: hsl(var(--h) 45% var(--chip-ink-l)); border-left: 3px solid hsl(var(--h) 65% var(--chip-edge-l)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s; }
+.chip b { font-family: var(--font-mono); font-size: .66rem; margin-right: 4px; }
+
+/* Cours */
+.side { display: grid; gap: 10px; }
+.side h2 { margin: 0 0 2px; font-family: var(--font-display); font-size: 1.1rem; }
+.side .hint { margin: -6px 0 4px; font-size: .8rem; color: var(--muted); }
+.course { display: grid; grid-template-columns: 6px 1fr; gap: 0 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; cursor: pointer; text-align: left; width: 100%; }
+.course:hover { border-color: var(--muted); }
+.course[aria-pressed="true"] { border-color: hsl(var(--h) 65% var(--chip-edge-l)); box-shadow: 0 0 0 1px hsl(var(--h) 65% var(--chip-edge-l)); }
+.course .bar { border-radius: 3px; background: hsl(var(--h) 65% var(--chip-edge-l)); }
+.course .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.course .top strong { font-weight: 600; line-height: 1.25; }
+.course .top code { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); white-space: nowrap; }
+.course .who { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+.prog { margin-top: 8px; height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.prog i { display: block; height: 100%; background: hsl(var(--h) 65% var(--chip-edge-l)); }
+.course .st { margin-top: 5px; font-size: .76rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; font-variant-numeric: tabular-nums; }
+.course .st b { color: var(--ink); font-weight: 600; }
+
+@media (max-width: 1000px) {
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .side { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .side h2, .side .hint { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .week { grid-template-columns: minmax(0, 1fr); }
+  .tcol { display: none; }
+  .day { grid-template-rows: auto; grid-auto-rows: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 8px; }
+  .day .dhead { flex-direction: row; align-items: baseline; gap: 10px; padding: 6px 8px; }
+  .slot.empty { display: none; }
+  .day .noday { display: block; color: var(--muted); font-size: .85rem; padding: 2px 8px 6px; }
+  .blk { min-height: 0; }
+  .offday { grid-row: auto; padding: 10px; }
+  .cell { min-height: 5.2rem; padding: 4px; }
+  .chip { font-size: 0; padding: 0; height: 6px; border-left-width: 0; background: hsl(var(--h) 65% var(--chip-edge-l)); }
+  .cell .offl { font-size: .62rem; }
+  .next { grid-template-columns: auto 1fr; }
+  .next .when { grid-column: 2; text-align: left; }
+  .next .when b { display: inline; margin-right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Horaire BES Webdeveloper</h1>
+      <p>Année scolaire 2026–2027 · grille du 25/09/2026</p>
+    </div>
+    <div class="years" role="group" aria-label="Année">
+      <button id="y1" data-year="1" aria-pressed="true">1ère</button>
+      <button id="y2" data-year="2" aria-pressed="false">2ème</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="next" id="next" aria-live="polite"></section>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Vue">
+      <button id="vWeek" data-view="week" aria-pressed="true">Semaine</button>
+      <button id="vMonth" data-view="month" aria-pressed="false">Mois</button>
+    </div>
+    <div class="nav">
+      <button class="iconbtn" id="prev" aria-label="Précédent">‹</button>
+      <div class="label" id="label"></div>
+      <button class="iconbtn" id="nextBtn" aria-label="Suivant">›</button>
+    </div>
+    <button class="todaybtn" id="today">Aujourd'hui</button>
+  </div>
+
+  <div class="main">
+    <div id="cal"></div>
+    <aside class="side" id="side"></aside>
+  </div>
+</div>
+
+<script>
+const BASE = new Date(2026, 7, 24);   // lundi de la semaine 1 de la grille
+const NCOLS = 45;
+const DAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven"];
+const DAYS_LONG = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+const MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const MONTHS_S = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+const SLOTS = {
+  am: { label: "Matin", s: [8, 45], e: [12, 45] },
+  pm: { label: "Après-midi", s: [13, 15], e: [17, 15] },
+  ev: { label: "Soir", s: [18, 0], e: [21, 45] },
+};
+const SLOT_ORDER = ["am", "pm", "ev"];
+
+// Semaines de vacances (colonnes de la grille) et jours de congé isolés [colonne, jour 1-5]
+const VACATIONS = [
+  { cols: [9, 10], name: "Congé d'automne" },
+  { cols: [18, 19], name: "Vacances d'hiver" },
+  { cols: [27, 28], name: "Vacances de détente" },
+  { cols: [36, 37], name: "Vacances de printemps" },
+];
+const DAYS_OFF = [[11, 1, "Congé"], [12, 3, "Armistice"], [32, 1, "Lundi de Pâques"], [39, 1, "Lundi de Pentecôte"]];
+const UNNUMBERED = [18, 19, 36, 37]; // semaines sans numéro sur la grille
+
+const YEARS = {
+  1: {
+    courses: {
+      STI:  { code: "5XSTI-2",  name: "Création d'applications Web statiques", short: "Web statique", prof: "Mme Vanassche", p: 160, h: 215 },
+      SCLA: { code: "5XSCL-1A", name: "Scripts clients (A)", short: "Scripts clients A", prof: "M. Van Maercke", p: 60, h: 168 },
+      SCLB: { code: "5XSCL-1B", name: "Scripts clients (B)", short: "Scripts clients B", prof: "M. Six", p: 60, h: 192 },
+      SE2:  { code: "5XSE2-1",  name: "Scripts serveurs", short: "Scripts serveurs", prof: "M. Van Maercke", p: 120, h: 262 },
+      BD2:  { code: "5XBD2-1",  name: "Web : SGBD", short: "SGBD", prof: "M. Martin", p: 80, h: 132 },
+      PRG:  { code: "5XPRG-1",  name: "Initiation à la programmation", short: "Programmation", prof: "M. Martin", p: 40, h: 38 },
+      MS1:  { code: "5XMS1-1",  name: "CMS – Niveau 1", short: "CMS", prof: "M. Martin", p: 40, h: 75 },
+      WEB:  { code: "5XWEB-1",  name: "Environnement et technologies web", short: "Env. web", prof: "M. Six", p: 40, h: 292 },
+      VTE:  { code: "5XVTE-1",  name: "Veille technologique", short: "Veille techno", prof: "M. Six", p: 40, h: 328 },
+      LAS:  { code: "5LAS2-1",  name: "Anglais en situation UE2", short: "Anglais", prof: "Mme Frasineanu", p: 80, h: 12 },
+    },
+    rules: [
+      ["STI", 2, "pm", "11-17,20-26,29-35,38-43"],
+      ["WEB", 3, "am", "5-8"],
+      ["SCLA", 3, "pm", "11,13-17,20-25"],
+      ["SCLB", 3, "pm", "26,29-35,38-42"],
+      ["MS1", 4, "am", "38-45"],
+      ["PRG", 4, "pm", "5-8,11-14"],
+      ["BD2", 4, "pm", "15-17,20-26,29-35"],
+      ["STI", 4, "pm", "38-43"],
+      ["LAS", 4, "ev", "1-8,11-17,20-22"],
+      ["WEB", 5, "am", "5-8"],
+      ["VTE", 5, "am", "11-17,20"],
+      ["SE2", 5, "pm", "13-17,20-26,29-35,38-43"],
+    ],
+  },
+  2: {
+    courses: {
+      DY:  { code: "5XDY-1",  name: "Projet web dynamique", short: "Projet dynamique", prof: "M. Six", p: 120, h: 12 },
+      COS: { code: "5XCOS-1", name: "Framework côté serveur", short: "Framework serveur", prof: "M. Six", p: 80, h: 215 },
+      UIU: { code: "5XUIU-1", name: "Approche UI UX design", short: "UI / UX", prof: "Mme Vanassche", p: 80, h: 292 },
+      FRA: { code: "5XFRA-1", name: "Framework côté client", short: "Framework client", prof: "M. Van Maercke", p: 40, h: 168 },
+      AP2: { code: "5XAP2-1", name: "Stage", short: "Stage", prof: "M. Martin", p: 240, h: 38 },
+      EI2: { code: "5XEI2-1", name: "Épreuve intégrée BES Webdeveloper", short: "Épreuve intégrée", prof: "M. Martin / M. Six", p: 120, h: 132 },
+    },
+    rules: [
+      ["COS", 1, "pm", "3-8"],
+      ["DY", 1, "pm", "12-17,20-21"],
+      ["COS", 2, "pm", "3-8"],
+      ["DY", 2, "pm", "11-17,20"],
+      ["UIU", 3, "pm", "5-8,11,13-17,20-26"],
+      ["COS", 4, "pm", "3-7"],
+      ["DY", 4, "pm", "8,11-17,20"],
+      ["FRA", 5, "pm", "3-8,11-12"],
+    ],
+  },
+};
+
+// ---------- helpers ----------
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const sod = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const key = d => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+const colMonday = c => addDays(BASE, 7 * (c - 1));
+const colOf = d => Math.floor(Math.round((sod(d) - BASE) / 864e5) / 7) + 1;
+const wdOf = d => (d.getDay() + 6) % 7; // 0 = lundi
+const expand = s => s.split(",").flatMap(p => { const [a, b = a] = p.split("-").map(Number); return Array.from({ length: b - a + 1 }, (_, i) => a + i); });
+const hm = ([h, m]) => `${String(h).padStart(2, "0")}h${String(m).padStart(2, "0")}`;
+const fmtDay = d => `${d.getDate()} ${MONTHS_S[d.getMonth()]}`;
+const schoolWeek = c => UNNUMBERED.includes(c) || c < 1 || c > NCOLS ? null : c - UNNUMBERED.filter(u => u < c).length;
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+
+const offMap = new Map();
+for (const v of VACATIONS) for (const c of v.cols) for (let i = 0; i < 5; i++) offMap.set(key(addDays(colMonday(c), i)), v.name);
+for (const [c, wd, name] of DAYS_OFF) offMap.set(key(addDays(colMonday(c), wd - 1)), name);
+const vacationOf = c => VACATIONS.find(v => v.cols.includes(c));
+
+function buildSessions(Y) {
+  const list = [];
+  for (const [id, wd, slot, spec] of Y.rules) {
+    for (const c of expand(spec)) {
+      const date = addDays(colMonday(c), wd - 1);
+      const S = SLOTS[slot];
+      list.push({ id, slot, date, start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), ...S.s), end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), ...S.e) });
+    }
+  }
+  list.sort((a, b) => a.start - b.start);
+  const count = {};
+  for (const s of list) s.n = count[s.id] = (count[s.id] || 0) + 1;
+  for (const s of list) s.total = count[s.id];
+  const byDay = new Map();
+  for (const s of list) { const k = key(s.date); if (!byDay.has(k)) byDay.set(k, []); byDay.get(k).push(s); }
+  return { list, byDay, count };
+}
+const DATA = { 1: buildSessions(YEARS[1]), 2: buildSessions(YEARS[2]) };
+
+// ---------- state ----------
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+const now = () => new Date();
+function currentCol() {
+  const d = now();
+  let c = colOf(d);
+  if (wdOf(d) >= 5) c += 1; // le week-end, on montre la semaine suivante
+  return Math.min(Math.max(c, 1), NCOLS);
+}
+function clampMonth(y, m) {
+  const v = Math.min(Math.max(y * 12 + m, 2026 * 12 + 7), 2027 * 12 + 6);
+  return { y: Math.floor(v / 12), m: v % 12 };
+}
+const state = {
+  year: store.get("hw-year") === "2" ? 2 : 1,
+  view: store.get("hw-view") === "month" ? "month" : "week",
+  col: currentCol(),
+  month: clampMonth(now().getFullYear(), now().getMonth()),
+  focus: null,
+};
+
+const $ = id => document.getElementById(id);
+const course = id => YEARS[state.year].courses[id];
+
+// ---------- rendu ----------
+function blockHTML(s, past) {
+  const C = course(s.id), S = SLOTS[s.slot];
+  return `<button class="blk${past ? " past" : ""}${state.focus === s.id ? " hl" : ""}" style="--h:${C.h}" data-focus="${s.id}" title="${esc(C.name)} · ${esc(C.prof)}">
+    <span class="time">${hm(S.s)} – ${hm(S.e)}</span>
+    <span class="nm">${esc(C.name)}</span>
+    <span class="meta"><span>${esc(C.prof)}</span><span>${s.n}/${s.total}</span></span>
+  </button>`;
+}
+
+function renderWeek() {
+  const D = DATA[state.year], c = state.col, mon = colMonday(c), fri = addDays(mon, 4);
+  const wk = schoolWeek(c);
+  let hours = 0, n = 0;
+  for (let i = 0; i < 5; i++) for (const s of D.byDay.get(key(addDays(mon, i))) || []) { n++; hours += (s.end - s.start) / 36e5; }
+  $("label").innerHTML = `<div class="big">${fmtDay(mon)} → ${fmtDay(fri)} ${fri.getFullYear()}${wk ? `<span class="wk">SEM. ${wk}/41</span>` : ""}</div>
+    <div class="sub">${n ? `${n} cours · ${String(hours).replace(".", ",")} h` : "Aucun cours cette semaine"}</div>`;
+  $("prev").disabled = c <= 1; $("nextBtn").disabled = c >= NCOLS;
+
+  const vac = vacationOf(c);
+  if (vac) {
+    const first = colMonday(vac.cols[0]), last = addDays(colMonday(vac.cols[vac.cols.length - 1]), 6);
+    $("cal").innerHTML = `<div class="vacation"><h2>${esc(vac.name)}</h2><p>Du ${fmtDay(first)} au ${fmtDay(last)} ${last.getFullYear()} · pas de cours</p></div>`;
+    return;
+  }
+  const slots = SLOT_ORDER.filter(sl => YEARS[state.year].rules.some(r => r[2] === sl));
+  const rows = slots.map(sl => sl === "ev" ? "7.6rem" : "9.6rem").join(" ");
+  const t = now(), todayK = key(t);
+  let html = `<div class="week${state.focus ? " dim" : ""}" style="--rows:${rows}">`;
+  html += `<div class="tcol" aria-hidden="true"><div></div>${slots.map(sl => `<div class="t">${hm(SLOTS[sl].s)}<br>${hm(SLOTS[sl].e)}</div>`).join("")}</div>`;
+  for (let i = 0; i < 5; i++) {
+    const d = addDays(mon, i), k = key(d), off = offMap.get(k), ss = D.byDay.get(k) || [];
+    html += `<div class="day${k === todayK ? " today" : ""}"><div class="dhead"><span class="dn">${DAYS_LONG[i]}</span><span class="dd">${fmtDay(d)}</span></div>`;
+    if (off) html += `<div class="offday">${esc(off)}</div>`;
+    else {
+      for (const sl of slots) {
+        const s = ss.find(x => x.slot === sl);
+        html += s ? `<div class="slot">${blockHTML(s, s.end < t)}</div>` : `<div class="slot empty"></div>`;
+      }
+      if (!ss.length) html += `<div class="noday">Pas cours</div>`;
+    }
+    html += `</div>`;
+  }
+  $("cal").innerHTML = html + `</div>`;
+}
+
+function renderMonth() {
+  const { y, m } = state.month, D = DATA[state.year];
+  const first = new Date(y, m, 1), last = new Date(y, m + 1, 0);
+  let start = addDays(first, -wdOf(first));
+  if (wdOf(first) >= 5) start = addDays(first, 7 - wdOf(first));
+  let n = 0;
+  for (const s of D.list) if (s.date.getMonth() === m && s.date.getFullYear() === y) n++;
+  $("label").innerHTML = `<div class="big">${MONTHS[m][0].toUpperCase() + MONTHS[m].slice(1)} ${y}</div><div class="sub">${n ? `${n} cours ce mois-ci` : "Aucun cours ce mois-ci"}</div>`;
+  $("prev").disabled = y * 12 + m <= 2026 * 12 + 7; $("nextBtn").disabled = y * 12 + m >= 2027 * 12 + 6;
+
+  const todayK = key(now());
+  let html = `<div class="month${state.focus ? " dim" : ""}">` + DAYS.map(d => `<div class="mh">${d}</div>`).join("");
+  for (let d = start; d <= last || wdOf(d) !== 0; d = addDays(d, 1)) {
+    const w = wdOf(d);
+    if (w >= 5) continue;
+    const k = key(d), off = offMap.get(k), ss = D.byDay.get(k) || [], c = colOf(d);
+    const inGrid = c >= 1 && c <= NCOLS, wk = w === 0 && inGrid ? schoolWeek(c) : null;
+    html += `<button class="cell${d.getMonth() !== m ? " out" : ""}${off ? " off" : ""}${k === todayK ? " today" : ""}" data-col="${inGrid ? c : ""}" aria-label="${DAYS_LONG[w]} ${fmtDay(d)}">
+      <span class="n"><span>${d.getDate()}</span>${wk ? `<span class="wkn">S${wk}</span>` : ""}</span>
+      ${off ? `<span class="offl">${esc(off)}</span>` : ss.map(s => { const C = course(s.id); return `<span class="chip${state.focus === s.id ? " hl" : ""}" style="--h:${C.h}"><b>${hm(SLOTS[s.slot].s)}</b>${esc(C.short)}</span>`; }).join("")}
+    </button>`;
+  }
+  $("cal").innerHTML = html + `</div>`;
+}
+
+function renderSide() {
+  const Y = YEARS[state.year], D = DATA[state.year], t = now();
+  let html = `<h2>Cours de ${state.year === 1 ? "1ère" : "2ème"}</h2><p class="hint">Clique sur un cours pour le repérer dans l'horaire.</p>`;
+  for (const [id, C] of Object.entries(Y.courses)) {
+    const ss = D.list.filter(s => s.id === id);
+    const done = ss.filter(s => s.end < t).length, nxt = ss.find(s => s.end >= t);
+    let st;
+    if (!ss.length) st = `<span>Pas encore placé sur la grille</span>`;
+    else if (!nxt) st = `<span><b>Terminé</b></span><span>${done}/${ss.length}</span>`;
+    else st = `<span>Prochain : <b>${DAYS[wdOf(nxt.date)].toLowerCase()}. ${fmtDay(nxt.date)}</b></span><span>${done}/${ss.length}</span>`;
+    html += `<button class="course" style="--h:${C.h}" data-focus="${id}" aria-pressed="${state.focus === id}">
+      <span class="bar"></span>
+      <span>
+        <span class="top"><strong>${esc(C.name)}</strong><code>${C.p} p</code></span>
+        <span class="who" style="display:block">${esc(C.prof)} · <code style="font-family:var(--font-mono);font-size:.7rem">${C.code}</code></span>
+        ${ss.length ? `<span class="prog" style="display:block"><i style="width:${Math.round(done / ss.length * 100)}%"></i></span>` : ""}
+        <span class="st">${st}</span>
+      </span>
+    </button>`;
+  }
+  $("side").innerHTML = html;
+}
+
+function relTime(ms) {
+  const min = Math.round(ms / 6e4);
+  if (min < 60) return `dans ${min} min`;
+  const h = Math.floor(min / 60), mm = min % 60;
+  if (h < 24) return `dans ${h} h${mm ? " " + String(mm).padStart(2, "0") : ""}`;
+  const days = Math.round((sod(new Date(Date.now() + ms)) - sod(now())) / 864e5);
+  return days === 1 ? "demain" : `dans ${days} jours`;
+}
+
+function renderNext() {
+  const t = now(), D = DATA[state.year];
+  const s = D.list.find(x => x.end > t);
+  if (!s) { $("next").innerHTML = `<span class="eyebrow">Prochain cours</span><span></span><div class="what"><strong>Plus de cours à l'horaire</strong><span>L'année est terminée sur cette grille.</span></div>`; $("next").style.removeProperty("--h"); return; }
+  const C = course(s.id), S = SLOTS[s.slot], live = s.start <= t;
+  const dayLabel = key(s.date) === key(t) ? "Aujourd'hui" : key(s.date) === key(addDays(t, 1)) ? "Demain" : `${DAYS_LONG[wdOf(s.date)]} ${fmtDay(s.date)}`;
+  $("next").style.setProperty("--h", C.h);
+  $("next").innerHTML = `<span class="eyebrow">${live ? "En cours" : "Prochain cours"}</span>
+    <span class="sw"></span>
+    <div class="what"><strong>${esc(C.name)}</strong><span>${esc(C.prof)} · séance ${s.n}/${s.total}</span></div>
+    <div class="when"><b>${live ? `fin ${relTime(s.end - t)}` : relTime(s.start - t)}</b>${dayLabel} · ${hm(S.s)}–${hm(S.e)}</div>`;
+}
+
+function render() {
+  for (const b of document.querySelectorAll("[data-year]")) b.setAttribute("aria-pressed", String(+b.dataset.year === state.year));
+  for (const b of document.querySelectorAll("[data-view]")) b.setAttribute("aria-pressed", String(b.dataset.view === state.view));
+  state.view === "week" ? renderWeek() : renderMonth();
+  renderSide();
+  renderNext();
+}
+
+function step(dir) {
+  if (state.view === "week") state.col = Math.min(Math.max(state.col + dir, 1), NCOLS);
+  else state.month = clampMonth(state.month.y, state.month.m + dir);
+  render();
+}
+
+// ---------- événements ----------
+document.querySelector(".years").addEventListener("click", e => {
+  const b = e.target.closest("[data-year]"); if (!b) return;
+  state.year = +b.dataset.year; state.focus = null; store.set("hw-year", String(state.year)); render();
+});
+document.querySelector(".seg").addEventListener("click", e => {
+  const b = e.target.closest("[data-view]"); if (!b) return;
+  state.view = b.dataset.view; store.set("hw-view", state.view);
+  if (state.view === "month") { const mon = colMonday(state.col); const ref = addDays(mon, 2); state.month = clampMonth(ref.getFullYear(), ref.getMonth()); }
+  render();
+});
+$("prev").addEventListener("click", () => step(-1));
+$("nextBtn").addEventListener("click", () => step(1));
+$("today").addEventListener("click", () => { state.col = currentCol(); state.month = clampMonth(now().getFullYear(), now().getMonth()); render(); });
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-focus]");
+  if (f) { state.focus = state.focus === f.dataset.focus ? null : f.dataset.focus; render(); return; }
+  const cell = e.target.closest(".cell[data-col]");
+  if (cell && cell.dataset.col) { state.col = +cell.dataset.col; state.view = "week"; store.set("hw-view", "week"); render(); }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea")) return;
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+  if (e.key === "Escape" && state.focus) { state.focus = null; render(); }
+});
+setInterval(() => { renderNext(); }, 60000);
+render();
+</script>
+</body>
+</html>
