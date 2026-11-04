@@ -4,6 +4,7 @@ Site statique qui affiche l'horaire du BES Webdeveloper (1ère et 2ème année) 
 
 - Vue **Semaine** et vue **Mois**, navigation avec les flèches du clavier
 - Choix **1ère / 2ème** (mémorisé dans le navigateur)
+- Horaire perso : l'œil à côté d'un cours le masque partout (semaine, mois, prochain cours), mémorisé dans le navigateur
 - Prochain cours, congés et vacances, progression de chaque cours
 - Données reprises de la grille officielle datée du 25/09/2026
 
