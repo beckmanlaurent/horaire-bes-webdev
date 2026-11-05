@@ -95,7 +95,7 @@ button { font: inherit; color: inherit; }
 .todaybtn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 7px 14px; cursor: pointer; font-weight: 600; }
 
 /* Grille principale */
-.main { margin-top: 16px; padding-bottom: 40px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+.main { margin-top: 16px; padding-bottom: 88px; display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
 
 /* Vue semaine */
 .week { display: grid; grid-template-columns: 4.2rem repeat(5, minmax(0, 1fr)); gap: 8px; }
@@ -197,6 +197,30 @@ button { font: inherit; color: inherit; }
   .label .big { font-size: 1.08rem; justify-content: center; gap: 2px 8px; }
   .label .sub { font-size: .78rem; }
 }
+
+/* Chat : bouton flottant et panneau en bas à droite, plein écran sur mobile */
+.chatfab, .chat { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 20; box-shadow: 0 8px 24px rgba(20, 27, 45, .28); }
+.chatfab { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line); background: var(--navy); color: var(--navy-ink); display: grid; place-items: center; cursor: pointer; }
+.chatfab svg { width: 24px; height: 24px; }
+.chat { width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100vh - 32px)); display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.chat-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.chat-head h2 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; line-height: 1.2; }
+.chat-head p { margin: 1px 0 0; color: var(--muted); font-size: .74rem; line-height: 1.3; }
+.chat-log { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.chat-log[data-ready]:empty::before { content: "Aucun message pour l'instant."; margin: auto; color: var(--muted); font-size: .88rem; }
+.chat-msg { overflow-wrap: anywhere; }
+.chat-msg b { font-weight: 600; }
+.chat-msg time { margin-left: 6px; color: var(--muted); font-family: var(--font-mono); font-size: .68rem; }
+.chat-msg span { display: block; }
+.chat-status { margin: 0; padding: 0 14px 8px; font-size: .78rem; }
+.chat-form { display: grid; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--line); }
+.chat-form input { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font: inherit; font-size: 16px; }
+.chat-send { display: flex; gap: 8px; }
+.chat-send button { flex: none; padding: 0 14px; border: 0; border-radius: 10px; background: var(--navy); color: var(--navy-ink); font-weight: 600; cursor: pointer; }
+.chat-send button:disabled { opacity: .5; cursor: default; }
+@media (max-width: 720px) {
+  .chat { right: 0; bottom: 0; width: 100%; height: 100vh; height: 100dvh; border: 0; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -236,6 +260,28 @@ button { font: inherit; color: inherit; }
     <aside class="side" id="side"></aside>
   </div>
 </div>
+
+<button class="chatfab" id="chatOpen" aria-label="Ouvrir le chat" title="Chat">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H4l2.3-3A8 8 0 1 1 21 12z"/></svg>
+</button>
+<section class="chat" id="chat" role="dialog" aria-label="Chat" hidden>
+  <header class="chat-head">
+    <div>
+      <h2>Chat</h2>
+      <p>Public : visible par toute personne qui a l'adresse du site</p>
+    </div>
+    <button class="iconbtn" id="chatClose" aria-label="Fermer le chat" title="Fermer">×</button>
+  </header>
+  <div class="chat-log" id="chatLog" role="log" aria-label="Messages" tabindex="0"></div>
+  <p class="chat-status" id="chatStatus" role="status" hidden></p>
+  <form class="chat-form" id="chatForm">
+    <input id="chatPseudo" maxlength="30" placeholder="Ton pseudo" aria-label="Ton pseudo" autocomplete="nickname">
+    <div class="chat-send">
+      <input id="chatText" maxlength="500" placeholder="Ton message" aria-label="Ton message" autocomplete="off">
+      <button id="chatSubmit" type="submit">Envoyer</button>
+    </div>
+  </form>
+</section>
 
 <script>
 const BASE = new Date(2026, 7, 24);   // lundi de la semaine 1 de la grille
@@ -547,7 +593,7 @@ document.addEventListener("click", e => {
   if (cell && cell.dataset.col) { state.col = +cell.dataset.col; state.view = "week"; store.set("hw-view", "week"); render(); }
 });
 document.addEventListener("keydown", e => {
-  if (e.target.closest("input, textarea")) return;
+  if (e.target.closest("input, textarea, #chat")) return;
   if (e.key === "ArrowLeft") step(-1);
   if (e.key === "ArrowRight") step(1);
   if (e.key === "Escape" && state.focus) { state.focus = null; render(); }
@@ -568,6 +614,105 @@ $("theme").addEventListener("click", () => {
   document.documentElement.dataset.theme = t; store.set("hw-theme", t); renderTheme();
 });
 darkMQ.addEventListener("change", renderTheme);
+
+// ---------- chat ----------
+// La clé publique est faite pour être visible ici : côté base, elle permet seulement de lire et d'envoyer des messages
+const CHAT_URL = "https://hpiebwynjhyobmomuiit.supabase.co";
+const CHAT_KEY = "sb_publishable_4H-2EErnYAEUY2t3xLULqg_kFAvVUM0";
+const CHAT_LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js";
+const CHAT_COLUMNS = "id, pseudo, contenu, created_at";
+const chatMessages = new Map();
+let chatDb = null, chatReady = null;
+
+function chatSetStatus(text) {
+  $("chatStatus").textContent = text;
+  $("chatStatus").hidden = !text;
+}
+function chatTime(iso) {
+  const d = new Date(iso), time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return key(d) === key(now()) ? time : `${fmtDay(d)} · ${time}`;
+}
+function chatElement(m) {
+  const row = document.createElement("div"), who = document.createElement("b"), time = document.createElement("time"), text = document.createElement("span");
+  row.className = "chat-msg";
+  who.textContent = m.pseudo;
+  time.textContent = chatTime(m.created_at);
+  text.textContent = m.contenu;
+  row.append(who, time, text);
+  return row;
+}
+// N'ajoute que les nouveaux messages, à leur place, pour que les lecteurs d'écran ne relisent pas toute la liste
+function renderChat(toBottom) {
+  const log = $("chatLog"), atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+  const list = [...chatMessages.values()].sort((a, b) => a.id - b.id);
+  let after = null;
+  for (const m of list.reverse()) {
+    if (!m.el) { m.el = chatElement(m); log.insertBefore(m.el, after); }
+    after = m.el;
+  }
+  if (toBottom || atBottom) log.scrollTop = log.scrollHeight;
+}
+function chatAdd(m) { if (!chatMessages.has(m.id)) chatMessages.set(m.id, m); }
+
+async function chatLoad() {
+  const { data, error } = await chatDb.from("messages").select(CHAT_COLUMNS).order("id", { ascending: false }).limit(50);
+  if (error) throw error;
+  data.forEach(chatAdd);
+  $("chatLog").dataset.ready = "1";
+  renderChat();
+}
+// Connexion à la première ouverture seulement ; en cas d'échec, on réessaie à l'ouverture suivante
+function chatConnect() {
+  if (chatReady) return;
+  chatSetStatus("Chargement…");
+  chatReady = (async () => {
+    if (!window.supabase) await new Promise((ok, fail) => {
+      const s = document.createElement("script");
+      s.src = CHAT_LIB; s.onload = ok; s.onerror = fail;
+      document.head.append(s);
+    });
+    chatDb = supabase.createClient(CHAT_URL, CHAT_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+    await chatLoad();
+    chatSetStatus("");
+    chatDb.channel("chat")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, p => { chatAdd(p.new); renderChat(); })
+      .subscribe(st => {
+        if (st === "SUBSCRIBED") { chatSetStatus(""); chatLoad().catch(() => {}); } // rattrape ce qui a été manqué pendant une coupure
+        else if (st === "CHANNEL_ERROR" || st === "TIMED_OUT") chatSetStatus("Connexion en direct perdue, nouvelle tentative…");
+      });
+  })().catch(() => { chatReady = null; chatDb = null; chatSetStatus("Impossible de charger le chat. Ferme et rouvre le panneau pour réessayer."); });
+}
+function chatToggle(open) {
+  $("chat").hidden = !open;
+  $("chatOpen").hidden = open;
+  if (!open) { $("chatOpen").focus(); return; }
+  chatConnect();
+  renderChat(true);
+  // Sur téléphone, on n'ouvre pas le clavier d'office : il cacherait les messages
+  const field = $("chatPseudo").value ? $("chatText") : $("chatPseudo");
+  (matchMedia("(hover: hover)").matches ? field : $("chatLog")).focus();
+}
+$("chatPseudo").value = store.get("hw-chat-pseudo") || "";
+$("chatOpen").addEventListener("click", () => chatToggle(true));
+$("chatClose").addEventListener("click", () => chatToggle(false));
+$("chat").addEventListener("keydown", e => { if (e.key === "Escape") chatToggle(false); });
+$("chatForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const pseudo = $("chatPseudo").value.trim(), contenu = $("chatText").value.trim();
+  if (!pseudo) { chatSetStatus("Choisis d'abord un pseudo."); $("chatPseudo").focus(); return; }
+  if (!contenu) { $("chatText").focus(); return; }
+  if (!chatDb) { chatSetStatus("Le chat n'est pas encore connecté."); return; }
+  store.set("hw-chat-pseudo", pseudo);
+  $("chatSubmit").disabled = true;
+  const { data, error } = await chatDb.from("messages").insert({ pseudo, contenu }).select(CHAT_COLUMNS).single();
+  $("chatSubmit").disabled = false;
+  if (error) { chatSetStatus("Message non envoyé, réessaie."); return; }
+  $("chatText").value = "";
+  chatSetStatus("");
+  chatAdd(data);
+  renderChat(true);
+  $("chatText").focus();
+});
 
 setInterval(() => { renderNext(); }, 60000);
 renderTheme();
